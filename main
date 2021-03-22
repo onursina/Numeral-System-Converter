@@ -1,0 +1,32 @@
+fun main() {
+    val base: Int? = readLine()!!.toIntOrNull()
+    if (base == null || base < 1 || base > 36) println("error 1") else {
+        val input = readLine()!!
+        val subInt = if (input.contains(".")) input.substringBefore(".") else input
+        val subFrac = if (input.contains(".")) input.substringAfter(".") else ""
+        val subIntDec = if (base == 1) { subInt.length } else { subInt.toIntOrNull(base) }
+        if (subIntDec == null) { println("error 2") } else {
+            var subFracDec = 0.0
+            if (subFrac.isNotEmpty()) subFrac.indices.forEach { i ->
+                subFracDec += Character.getNumericValue(subFrac[i]) / Math.pow(base.toDouble(), i.toDouble() + 1.0)
+            }
+            val targetBase = readLine()!!.toIntOrNull()
+            if (targetBase == null || targetBase < 1 || targetBase > 36) println("error 3") else {
+                var result = ""
+                if (targetBase == 1) result = "1".repeat(subIntDec)
+                else { try { result = subIntDec.toString(targetBase) } catch(e:Exception) { println("error 4") } }
+                if (result.isNotEmpty()) {
+                    if (subFracDec != 0.0) {
+                        result += "."
+                        var n:Double = subFracDec * targetBase * 100000 / 100000
+                        repeat(5) {
+                            result += n.toInt().toString(targetBase)
+                            n = (n - n.toInt()) * targetBase * 100000 / 100000
+                        }
+                    }
+                    println(result)
+                }
+            }
+        }
+    }
+}
