@@ -1,0 +1,34 @@
+import java.math.BigDecimal
+import java.math.RoundingMode
+import kotlin.math.pow
+
+fun main() {
+    do {
+        println("Enter two numbers in format: {source base} {target base} (To quit type /exit)")
+        when (val input1 = readLine()!!) {
+            "/exit" -> break
+            else -> do {
+                val (sb, tb) = input1.split(" ").map { it.toInt() }
+                println("Enter number in base $sb to convert to base $tb (To go back type /back)")
+                val input2 = readLine()!!
+                if (input2 == "/back") break
+                var result = input2.substringBefore('.').toBigInteger(sb).toString(tb)
+                if (input2.contains(".")) {
+                    val frac = input2.substringAfter('.')
+                    var fracDec = BigDecimal(0.0)
+                    frac.forEachIndexed { i, v ->
+                        fracDec += (Character.getNumericValue(v).toDouble() / sb.toDouble().pow(1.0 + i)).toBigDecimal()
+                    }
+                    fracDec = fracDec.setScale(5, RoundingMode.HALF_EVEN)
+                    var fracTBase = "0."
+                    repeat (5) {
+                        fracTBase += (fracDec * tb.toBigDecimal()).toInt().toString(tb)
+                        fracDec = (fracDec * tb.toBigDecimal()) - (fracDec * tb.toBigDecimal()).toInt().toBigDecimal()
+                    }
+                    result += fracTBase.substringAfter('0')
+                }
+                println("Conversion result: $result")
+            } while (true)
+        }
+    } while (true)
+}
